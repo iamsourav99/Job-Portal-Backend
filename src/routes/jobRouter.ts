@@ -4,6 +4,8 @@ import { authorize, isAuthenticated } from "../middlewares/auth.js";
 import {
   deleteJob,
   getJobs,
+  getJobsByIdRecruiter,
+  getJobsByRecruiter,
   postJob,
   updateJob,
 } from "../controllers/jobController.js";
@@ -15,10 +17,13 @@ import {
 import { jobFilterSchema } from "../validation/jobFilterSchema.js";
 import { jobFilterSearchController } from "../controllers/jobFilterSerchController.js";
 
+
 const router = express.Router();
 
 //API-->   http://localhost:5500/api/job
 
+
+//*********FOR RECRUITER ONLY*************** */
 router.post(
   "/post",
   validateBody(jobSchema),
@@ -43,6 +48,25 @@ router.put(
   deleteJob
 );
 
+router.get(
+  "/postedByRecruiter",
+  validateQuery(jobFilterSchema),
+  isAuthenticated,
+  authorize("RECRUITER"),
+  getJobsByRecruiter
+);
+router.get(
+  "/postedByRecruiter/:id",
+  validateParams(jobIdSchema),
+  isAuthenticated,
+  authorize("RECRUITER"),
+  getJobsByIdRecruiter
+);
+
+
+
+//-------------For Applicant or anyone without Authentication-------------------
+
 router.get("/", validateQuery(jobFilterSchema), getJobs);
 
 router.get(
@@ -50,4 +74,5 @@ router.get(
   validateQuery(jobFilterSchema),
   jobFilterSearchController
 );
+
 export default router;

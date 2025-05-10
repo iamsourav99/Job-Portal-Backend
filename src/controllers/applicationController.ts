@@ -6,11 +6,7 @@ import { parseQueryParams } from "../utils/PaginationAndSortingHelper.js";
 
 //------------------------------for Applicant user-----------------------------------------
 
-export const applyJob = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const applyJob = async (req: Request, res: Response): Promise<void> => {
   const jobId = req.params.id;
   const { resume } = req.body;
 
@@ -64,13 +60,12 @@ export const applyJob = async (
 
 export const getMyApplications = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<void> => {
   //   const jobId = req.params.jobId;
   try {
- const { page, limit, sortBy, order } = parseQueryParams(req.query);
- const skip = (page - 1) * limit;
+    const { page, limit, sortBy, order } = parseQueryParams(req.query);
+    const skip = (page - 1) * limit;
 
     const applicantId = (req as any).user.id;
 
@@ -95,7 +90,7 @@ export const getMyApplications = async (
         },
       },
       skip,
-      take:limit,
+      take: limit,
       orderBy: {
         [sortBy]: order,
       },
@@ -111,12 +106,17 @@ export const getMyApplications = async (
       },
     });
 
-    sendSuccess(res, {
-      appliedJobs,
-      totalvalues: total,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-    }, "All Applications", 200);
+    sendSuccess(
+      res,
+      {
+        appliedJobs,
+        totalvalues: total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+      "All Applications",
+      200
+    );
     return;
   } catch (error) {
     sendError(res, error, "Internal Server Error", 500);
@@ -125,8 +125,7 @@ export const getMyApplications = async (
 };
 export const getMyApplicationbyId = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<void> => {
   const applicationId = req.params.id;
   try {
@@ -175,15 +174,12 @@ export const getMyApplicationbyId = async (
 //------------------------------for Recruiter user-----------------------------------------
 export const getApplicationsByJobs = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<void> => {
   const jobId = req.params.jobId;
   try {
-const { page, limit, sortBy, order } = parseQueryParams(req.query);
-const skip = (page - 1) * limit;
-
-
+    const { page, limit, sortBy, order } = parseQueryParams(req.query);
+    const skip = (page - 1) * limit;
 
     const recruiterId = (req as any).user.id;
     //check is the job is belong to recruiter
@@ -193,7 +189,6 @@ const skip = (page - 1) * limit;
         id: jobId,
         isDeleted: false,
       },
-      
     });
 
     if (!job) {
@@ -220,12 +215,11 @@ const skip = (page - 1) * limit;
             id: true,
             name: true,
             email: true,
-            
           },
         },
       },
       skip,
-      take:limit,
+      take: limit,
       orderBy: {
         [sortBy]: order,
       },
@@ -234,19 +228,24 @@ const skip = (page - 1) * limit;
       sendError(res, "Not Found", "No application found to this job", 404);
       return;
     }
-     const total = await prisma.application.count({
+    const total = await prisma.application.count({
       where: {
         isDeleted: false,
         id: jobId,
       },
     });
 
-     sendSuccess(res, {
-      jobApplications,
-      totalvalues: total,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-    },`Applications recived for ${jobId} `,200);
+    sendSuccess(
+      res,
+      {
+        jobApplications,
+        totalvalues: total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      },
+      `Applications recived for ${jobId} `,
+      200
+    );
     return;
   } catch (error) {
     sendError(res, error, "Internal Server Error", 500);
