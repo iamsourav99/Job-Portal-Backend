@@ -1,5 +1,5 @@
 
-export interface QueryParams {
+interface QueryParams {
   page: number;
   limit: number;
   sortBy: string;

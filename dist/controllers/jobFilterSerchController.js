@@ -3,7 +3,7 @@ import { buildJobQuery } from "../utils/jobSearchHelper.js";
 import { sendSuccess } from "../utils/responseHelper.js";
 export const jobFilterSearchController = async (req, res) => {
     try {
-        const jobQuery = buildJobQuery(req.query); // Already validated
+        const jobQuery = buildJobQuery(req.query); // Already validated by joi
         const jobs = await prisma.job.findMany({
             where: jobQuery.filters,
             skip: jobQuery.skip,

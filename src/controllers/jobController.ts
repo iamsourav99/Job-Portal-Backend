@@ -1,12 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import {  Request, Response } from "express";
 import { prisma } from "../config/database.js";
 import { sendError, sendSuccess } from "../utils/responseHelper.js";
 import { parseQueryParams } from "../utils/PaginationAndSortingHelper.js";
 //post job
 export const postJob = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   try {
     if (!req.body) {
@@ -17,17 +16,14 @@ export const postJob = async (
     const job = await prisma.job.create({
       data: { title, description, skills, recruiterId },
     });
-    sendSuccess(res, job, "job posted successfully", 201);
+    const{isDeleted,deletedAt,updatedAt,...safeData}=job; //destructure job data
+    sendSuccess(res, safeData, "job posted successfully", 201);
   } catch (err) {
     sendError(res, err, "Unable to post job", 500);
   }
 };
 
-export const getJobs = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getJobs = async (req: Request, res: Response) => {
   try {
     const { page, limit, sortBy, order } = parseQueryParams(req.query);
     const skip = (page - 1) * limit;
@@ -87,8 +83,7 @@ export const getJobs = async (
 
 export const updateJob = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<void> => {
   try {
     const { title, description, skills } = req.body;
@@ -125,8 +120,7 @@ export const updateJob = async (
 
 export const deleteJob = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<void> => {
   try {
     const jobId = req.params.id;
@@ -162,8 +156,7 @@ export const deleteJob = async (
 
 export const getJobsByRecruiter = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) => {
   try {
     //values for pagination and Sorting
@@ -230,8 +223,7 @@ export const getJobsByRecruiter = async (
 
 export const getJobsByIdRecruiter = async (
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): Promise<void> => {
   try {
     const jobId = req.params.id;

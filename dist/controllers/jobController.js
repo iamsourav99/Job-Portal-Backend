@@ -2,7 +2,7 @@ import { prisma } from "../config/database.js";
 import { sendError, sendSuccess } from "../utils/responseHelper.js";
 import { parseQueryParams } from "../utils/PaginationAndSortingHelper.js";
 //post job
-export const postJob = async (req, res, next) => {
+export const postJob = async (req, res) => {
     try {
         if (!req.body) {
             res.status(400).json({ message: "Request body is missing." });
@@ -12,13 +12,14 @@ export const postJob = async (req, res, next) => {
         const job = await prisma.job.create({
             data: { title, description, skills, recruiterId },
         });
-        sendSuccess(res, job, "job posted successfully", 201);
+        const { isDeleted, deletedAt, updatedAt, ...safeData } = job; //destructure job data
+        sendSuccess(res, safeData, "job posted successfully", 201);
     }
     catch (err) {
         sendError(res, err, "Unable to post job", 500);
     }
 };
-export const getJobs = async (req, res, next) => {
+export const getJobs = async (req, res) => {
     try {
         const { page, limit, sortBy, order } = parseQueryParams(req.query);
         const skip = (page - 1) * limit;
@@ -68,7 +69,7 @@ export const getJobs = async (req, res, next) => {
         return;
     }
 };
-export const updateJob = async (req, res, next) => {
+export const updateJob = async (req, res) => {
     try {
         const { title, description, skills } = req.body;
         const jobId = req.params.id;
@@ -96,7 +97,7 @@ export const updateJob = async (req, res, next) => {
         sendError(res, error, "Internal Server Error", 500);
     }
 };
-export const deleteJob = async (req, res, next) => {
+export const deleteJob = async (req, res) => {
     try {
         const jobId = req.params.id;
         if (!jobId) {
@@ -124,7 +125,7 @@ export const deleteJob = async (req, res, next) => {
         sendError(res, error, "Internal Server Error", 500);
     }
 };
-export const getJobsByRecruiter = async (req, res, next) => {
+export const getJobsByRecruiter = async (req, res) => {
     try {
         //values for pagination and Sorting
         const { page, limit, sortBy, order } = parseQueryParams(req.query);
@@ -179,7 +180,7 @@ export const getJobsByRecruiter = async (req, res, next) => {
         return;
     }
 };
-export const getJobsByIdRecruiter = async (req, res, next) => {
+export const getJobsByIdRecruiter = async (req, res) => {
     try {
         const jobId = req.params.id;
         const recruiterId = req.user.id;

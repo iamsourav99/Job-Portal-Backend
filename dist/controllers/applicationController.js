@@ -2,7 +2,7 @@ import { prisma } from "../config/database.js";
 import { sendError, sendSuccess } from "../utils/responseHelper.js";
 import { parseQueryParams } from "../utils/PaginationAndSortingHelper.js";
 //------------------------------for Applicant user-----------------------------------------
-export const applyJob = async (req, res, next) => {
+export const applyJob = async (req, res) => {
     const jobId = req.params.id;
     const { resume } = req.body;
     try {
@@ -34,7 +34,8 @@ export const applyJob = async (req, res, next) => {
                 jobId,
             },
         });
-        sendSuccess(res, application, "Application Received", 201);
+        const { isDeleted, deletedAt, updatedAt, ...safedata } = application;
+        sendSuccess(res, safedata, "Application Received", 201);
         return;
     }
     catch (error) {
@@ -42,7 +43,7 @@ export const applyJob = async (req, res, next) => {
         return;
     }
 };
-export const getMyApplications = async (req, res, next) => {
+export const getMyApplications = async (req, res) => {
     //   const jobId = req.params.jobId;
     try {
         const { page, limit, sortBy, order } = parseQueryParams(req.query);
@@ -96,7 +97,7 @@ export const getMyApplications = async (req, res, next) => {
         return;
     }
 };
-export const getMyApplicationbyId = async (req, res, next) => {
+export const getMyApplicationbyId = async (req, res) => {
     const applicationId = req.params.id;
     try {
         const applicantId = req.user.id;
@@ -140,7 +141,7 @@ export const getMyApplicationbyId = async (req, res, next) => {
     }
 };
 //------------------------------for Recruiter user-----------------------------------------
-export const getApplicationsByJobs = async (req, res, next) => {
+export const getApplicationsByJobs = async (req, res) => {
     const jobId = req.params.jobId;
     try {
         const { page, limit, sortBy, order } = parseQueryParams(req.query);

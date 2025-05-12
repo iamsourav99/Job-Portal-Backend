@@ -50,7 +50,8 @@ export const applyJob = async (req: Request, res: Response): Promise<void> => {
       },
     });
 
-    sendSuccess(res, application, "Application Received", 201);
+    const{isDeleted,deletedAt,updatedAt,...safedata}=application;
+    sendSuccess(res, safedata, "Application Received", 201);
     return;
   } catch (error) {
     sendError(res, error, "Internal Server Error", 500);

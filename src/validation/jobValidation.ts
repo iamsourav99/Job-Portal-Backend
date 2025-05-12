@@ -1,7 +1,7 @@
 import joi from "joi";
 
 export const jobSchema = joi.object({
-  title: joi.string().required(),
+  title: joi.string().min(3).max(50).required(),
   description: joi.string().optional(),
   skills: joi.string().required(),
 });

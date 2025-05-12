@@ -1,11 +1,14 @@
-import express, { json, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import authRouter from "./routes/authRouter.js";
 import jobRouter from "./routes/jobRouter.js";
 import applicationRouter from "./routes/applicationRouter.js";
-dotenv.config();
+import { connectDB } from "./config/database.js";
+
+dotenv.config();//.env file configuration
+connectDB(); //Database connection
 
 const PORT: number = Number(process.env.PORT) || 3000;
 

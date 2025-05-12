@@ -11,6 +11,8 @@ export interface ErrorResponse {
   message: string;
   error: string;
 }
+
+
 //function to send resonse while success
 export const sendSuccess = <T>(
   res: Response,
@@ -19,6 +21,7 @@ export const sendSuccess = <T>(
   statusCode = 200,
   cookie?: { name: string; value: string; options?: any }
 ): Response<SuccessResponse<T>> => {
+  
   if (cookie) {
     res.cookie(cookie.name, cookie.value, cookie.options || {});
   }

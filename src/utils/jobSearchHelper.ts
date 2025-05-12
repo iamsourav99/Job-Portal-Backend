@@ -1,5 +1,4 @@
-import { date } from "joi";
-
+//interface to define query type explicitly
 export interface JobSearchQuery {
   page?: string;
   limit?: string;
@@ -20,15 +19,20 @@ export const buildJobQuery = (query: JobSearchQuery) => {
     postDate,
     skills,
   } = query;
-  const filters: any = { isDeleted: false };
+
+  const filters: any = { isDeleted: false }; //objects for filtering
+
   if (title) filters.title = { contains: title };
-if (postDate) {
+
+  if (postDate) {
     const start = new Date(postDate);
     const end = new Date(start);
-    end.setDate(start.getDate() + 1); 
+    end.setDate(start.getDate() + 1);
 
     filters.postDate = { gte: start, lt: end };
   }
+
+  //convert comma seperated skills into array
   if (skills) {
     const skillArray = skills.split(",").map((s) => s.trim().toLowerCase());
     filters.OR = skillArray.map((skill) => ({

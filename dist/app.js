@@ -5,7 +5,9 @@ import cors from "cors";
 import authRouter from "./routes/authRouter.js";
 import jobRouter from "./routes/jobRouter.js";
 import applicationRouter from "./routes/applicationRouter.js";
-dotenv.config();
+import { connectDB } from "./config/database.js";
+dotenv.config(); //.env file configuration
+connectDB(); //Database connection
 const PORT = Number(process.env.PORT) || 3000;
 const app = express();
 //all middleware

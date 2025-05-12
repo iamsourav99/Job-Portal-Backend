@@ -1,6 +1,6 @@
 export const buildJobQuery = (query) => {
     const { page, limit, sortBy = "postDate", order = "desc", title, postDate, skills, } = query;
-    const filters = { isDeleted: false };
+    const filters = { isDeleted: false }; //objects for filtering
     if (title)
         filters.title = { contains: title };
     if (postDate) {
@@ -9,6 +9,7 @@ export const buildJobQuery = (query) => {
         end.setDate(start.getDate() + 1);
         filters.postDate = { gte: start, lt: end };
     }
+    //convert comma seperated skills into array
     if (skills) {
         const skillArray = skills.split(",").map((s) => s.trim().toLowerCase());
         filters.OR = skillArray.map((skill) => ({

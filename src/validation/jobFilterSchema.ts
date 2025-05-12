@@ -1,7 +1,7 @@
 import joi from 'joi';
 
 export const jobFilterSchema = joi.object({
-  title: joi.string().optional(),
+  title: joi.string().min(3).max(50).optional(),
   postDate: joi.string().isoDate().optional(),
   skills: joi.string().optional(), 
   page: joi.number().min(1).default(1),
