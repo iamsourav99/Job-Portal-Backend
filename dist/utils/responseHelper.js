@@ -12,7 +12,7 @@ export const sendSuccess = (res, data, message = "Success", statusCode = 200, co
     }
     return res.status(statusCode).json(response);
 };
-//function to send response while error
+//function to send response while error ocured
 export const sendError = (res, error, message = "Something went wrong", statusCode = 500) => {
     const response = {
         success: false,

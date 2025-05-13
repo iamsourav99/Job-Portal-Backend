@@ -77,12 +77,13 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const userLogout = async (req: Request, res: Response) => {
+export const userLogout = async (req: Request, res: Response):Promise<void> => {
   try {
     res.clearCookie("token").status(200).json({
       success: true,
       message: "Logged out Successfully",
     });
+    return
   } catch (error) {
     sendError(res, error, "Unable to Logout -- Server Error", 500);
     return;

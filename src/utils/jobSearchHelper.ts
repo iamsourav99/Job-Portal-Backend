@@ -1,12 +1,12 @@
 //interface to define query type explicitly
-export interface JobSearchQuery {
+interface JobSearchQuery {
   page?: string;
   limit?: string;
   sortBy?: string;
   order?: "asc" | "desc";
   title?: string;
   postDate?: string;
-  skills?: string; // comma-separated
+  skills?: string; // comma-separated not array
 }
 
 export const buildJobQuery = (query: JobSearchQuery) => {
@@ -20,14 +20,20 @@ export const buildJobQuery = (query: JobSearchQuery) => {
     skills,
   } = query;
 
-  const filters: any = { isDeleted: false }; //objects for filtering
+  // declearing object for filtering with custom types
+  const filters: {
+    isDeleted: boolean;
+    title?: { contains: string };
+    postDate?: { gte: Date; lt: Date };
+    OR?: { skills: { contains: string } }[];
+  } = { isDeleted: false };
 
-  if (title) filters.title = { contains: title };
+  if (title) filters.title = { contains: title }; //it will generate sql (where title like %something%) for partial matching
 
   if (postDate) {
     const start = new Date(postDate);
     const end = new Date(start);
-    end.setDate(start.getDate() + 1);
+    end.setDate(end.getDate() + 1);
 
     filters.postDate = { gte: start, lt: end };
   }
@@ -41,8 +47,8 @@ export const buildJobQuery = (query: JobSearchQuery) => {
       },
     }));
   }
-  const pageNumber = parseInt(page as string, 10) || 1;
-  const limitNumber = parseInt(limit as string, 10) || 5;
+  const pageNumber = Number(page)|| 1;
+  const limitNumber =Number(page)|| 5;
   const skip = (pageNumber - 1) * limitNumber;
   const take = limitNumber;
   const orderBy = { [sortBy]: order };

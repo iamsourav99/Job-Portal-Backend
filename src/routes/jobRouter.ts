@@ -17,11 +17,9 @@ import {
 import { jobFilterSchema } from "../validation/jobFilterSchema.js";
 import { jobFilterSearchController } from "../controllers/jobFilterSerchController.js";
 
-
 const router = express.Router();
 
 //API-->   http://localhost:5500/api/job
-
 
 //*********FOR RECRUITER ONLY*************** */
 router.post(
@@ -62,8 +60,6 @@ router.get(
   authorize("RECRUITER"),
   getJobsByIdRecruiter
 );
-
-
 
 //-------------For Applicant or anyone without Authentication-------------------
 

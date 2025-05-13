@@ -42,6 +42,7 @@ export const isAuthenticated = async (req, res, next) => {
             .status(500)
             .json({ success: false, message: "Authentication Failed", Error: err });
     }
+    return;
 };
 //function to check user is authorized or not
 export const authorize = (...roles) => (req, res, next) => {

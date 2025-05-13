@@ -38,9 +38,10 @@ export const jobFilterSearchController = async (req, res) => {
             currentPage: jobQuery.pageNumber,
             totalPages: Math.ceil(total / jobQuery.take),
         });
+        return;
     }
     catch (error) {
-        console.error("Error fetching jobs", error);
         res.status(500).json({ error: "Internal Server Error" });
+        return;
     }
 };

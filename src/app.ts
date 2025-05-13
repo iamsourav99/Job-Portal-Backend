@@ -2,9 +2,11 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+//importing routes
 import authRouter from "./routes/authRouter.js";
 import jobRouter from "./routes/jobRouter.js";
 import applicationRouter from "./routes/applicationRouter.js";
+//for database connection
 import { connectDB } from "./config/database.js";
 
 dotenv.config();//.env file configuration

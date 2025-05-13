@@ -71,6 +71,7 @@ export const userLogout = async (req, res) => {
             success: true,
             message: "Logged out Successfully",
         });
+        return;
     }
     catch (error) {
         sendError(res, error, "Unable to Logout -- Server Error", 500);

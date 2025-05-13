@@ -38,7 +38,7 @@ export const sendSuccess = <T>(
   return res.status(statusCode).json(response);
 };
 
-//function to send response while error
+//function to send response while error ocured
 export const sendError = (
   res: Response,
   error?: any,

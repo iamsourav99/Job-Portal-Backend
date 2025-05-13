@@ -142,7 +142,7 @@ export const getMyApplicationbyId = async (req, res) => {
 };
 //------------------------------for Recruiter user-----------------------------------------
 export const getApplicationsByJobs = async (req, res) => {
-    const jobId = req.params.jobId;
+    const jobId = req.params.id;
     try {
         const { page, limit, sortBy, order } = parseQueryParams(req.query);
         const skip = (page - 1) * limit;
@@ -150,19 +150,19 @@ export const getApplicationsByJobs = async (req, res) => {
         //check is the job is belong to recruiter
         const job = await prisma.job.findFirst({
             where: {
-                recruiterId: recruiterId,
                 id: jobId,
+                recruiterId: recruiterId,
                 isDeleted: false,
             },
         });
         if (!job) {
-            sendError(res, "Unauthorized", "you are not authorized to view application of this job");
+            sendError(res, "Unauthorized", "you are not authorized to view application of this job or job not posted by you");
             return;
         }
         //fins all applications details of specified jobid
         const jobApplications = await prisma.application.findMany({
             where: {
-                id: jobId,
+                jobId: jobId,
                 isDeleted: false,
             },
             select: {
@@ -191,7 +191,7 @@ export const getApplicationsByJobs = async (req, res) => {
         const total = await prisma.application.count({
             where: {
                 isDeleted: false,
-                id: jobId,
+                jobId: jobId,
             },
         });
         sendSuccess(res, {
@@ -199,7 +199,7 @@ export const getApplicationsByJobs = async (req, res) => {
             totalvalues: total,
             currentPage: page,
             totalPages: Math.ceil(total / limit),
-        }, `Applications recived for ${jobId} `, 200);
+        }, `Applications recived against jobId: ${jobId} `, 200);
         return;
     }
     catch (error) {

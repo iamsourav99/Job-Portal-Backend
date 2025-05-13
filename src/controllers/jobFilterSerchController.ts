@@ -1,9 +1,12 @@
 import { Request, Response } from "express";
 import { prisma } from "../config/database.js";
-import { buildJobQuery, JobSearchQuery } from "../utils/jobSearchHelper.js";
+import { buildJobQuery } from "../utils/jobSearchHelper.js";
 import { sendError, sendSuccess } from "../utils/responseHelper.js";
 
-export const jobFilterSearchController = async (req: Request, res: Response):Promise<void> => {
+export const jobFilterSearchController = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const jobQuery = buildJobQuery(req.query); // Already validated by joi
     const jobs = await prisma.job.findMany({
@@ -40,8 +43,9 @@ export const jobFilterSearchController = async (req: Request, res: Response):Pro
       currentPage: jobQuery.pageNumber,
       totalPages: Math.ceil(total / jobQuery.take),
     });
+    return;
   } catch (error) {
-    console.error("Error fetching jobs", error);
     res.status(500).json({ error: "Internal Server Error" });
+    return;
   }
 };

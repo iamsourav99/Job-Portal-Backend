@@ -177,17 +177,19 @@ export const getApplicationsByJobs = async (
   req: Request,
   res: Response
 ): Promise<void> => {
-  const jobId = req.params.jobId;
+  const jobId = req.params.id;
+  
   try {
     const { page, limit, sortBy, order } = parseQueryParams(req.query);
     const skip = (page - 1) * limit;
 
     const recruiterId = (req as any).user.id;
+
     //check is the job is belong to recruiter
     const job = await prisma.job.findFirst({
       where: {
-        recruiterId: recruiterId,
         id: jobId,
+        recruiterId: recruiterId,
         isDeleted: false,
       },
     });
@@ -196,14 +198,14 @@ export const getApplicationsByJobs = async (
       sendError(
         res,
         "Unauthorized",
-        "you are not authorized to view application of this job"
+        "you are not authorized to view application of this job or job not posted by you"
       );
       return;
     }
     //fins all applications details of specified jobid
     const jobApplications = await prisma.application.findMany({
       where: {
-        id: jobId,
+        jobId: jobId,
         isDeleted: false,
       },
       select: {
@@ -232,7 +234,7 @@ export const getApplicationsByJobs = async (
     const total = await prisma.application.count({
       where: {
         isDeleted: false,
-        id: jobId,
+        jobId: jobId,
       },
     });
 
@@ -244,7 +246,7 @@ export const getApplicationsByJobs = async (
         currentPage: page,
         totalPages: Math.ceil(total / limit),
       },
-      `Applications recived for ${jobId} `,
+      `Applications recived against jobId: ${jobId} `,
       200
     );
     return;

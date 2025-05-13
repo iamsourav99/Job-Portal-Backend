@@ -1,25 +1,22 @@
-import {  Request, Response } from "express";
+import { Request, Response } from "express";
 import { prisma } from "../config/database.js";
 import { sendError, sendSuccess } from "../utils/responseHelper.js";
 import { parseQueryParams } from "../utils/PaginationAndSortingHelper.js";
 //post job
-export const postJob = async (
-  req: Request,
-  res: Response
-) => {
+export const postJob = async (req: Request, res: Response) => {
   try {
-    if (!req.body) {
-      res.status(400).json({ message: "Request body is missing." });
-    }
     const { title, description, skills } = req.body;
     const recruiterId = (req as any).user.id;
     const job = await prisma.job.create({
       data: { title, description, skills, recruiterId },
     });
-    const{isDeleted,deletedAt,updatedAt,...safeData}=job; //destructure job data
+
+    const { isDeleted, deletedAt, updatedAt, ...safeData } = job; //destructure job data
     sendSuccess(res, safeData, "job posted successfully", 201);
+    return;
   } catch (err) {
     sendError(res, err, "Unable to post job", 500);
+    return;
   }
 };
 
@@ -62,7 +59,6 @@ export const getJobs = async (req: Request, res: Response) => {
       return;
     }
 
-    // res.json(jobs);
     sendSuccess(
       res,
       {
@@ -81,15 +77,13 @@ export const getJobs = async (req: Request, res: Response) => {
   }
 };
 
-export const updateJob = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const updateJob = async (req: Request, res: Response): Promise<void> => {
   try {
     const { title, description, skills } = req.body;
     const jobId = req.params.id;
     if (!jobId) {
       sendError(res, "Error to get job id", "Please provide job is url", 400);
+      return;
     }
     const recruiterId = (req as any).user.id;
 
@@ -107,21 +101,24 @@ export const updateJob = async (
         "Job not found or you are unauthorized ",
         401
       );
+      return;
     }
     const updatedJob = await prisma.job.update({
       where: { id: jobId },
       data: { title, description, skills, updatedAt: new Date() },
     });
-    sendSuccess(res, updatedJob, "Job Updated Successfully", 201);
+
+    //destructureing for not sending all data
+    const { isDeleted, deletedAt, ...safeData } = updatedJob;
+    sendSuccess(res, safeData, "Job Updated Successfully", 201);
+    return;
   } catch (error) {
     sendError(res, error, "Internal Server Error", 500);
+    return;
   }
 };
 
-export const deleteJob = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const deleteJob = async (req: Request, res: Response): Promise<void> => {
   try {
     const jobId = req.params.id;
     if (!jobId) {
@@ -149,15 +146,14 @@ export const deleteJob = async (
       data: { isDeleted: true, deletedAt: new Date() },
     });
     sendSuccess(res, deletedJob, "Job deleted Successfully(soft delete)", 200);
+    return;
   } catch (error) {
     sendError(res, error, "Internal Server Error", 500);
+    return;
   }
 };
 
-export const getJobsByRecruiter = async (
-  req: Request,
-  res: Response
-) => {
+export const getJobsByRecruiter = async (req: Request, res: Response) => {
   try {
     //values for pagination and Sorting
     const { page, limit, sortBy, order } = parseQueryParams(req.query);
@@ -245,8 +241,8 @@ export const getJobsByIdRecruiter = async (
       );
       return;
     }
-
-    sendSuccess(res, job, "Found Job by job id", 200);
+    const { isDeleted, deletedAt, ...safeData } = job;
+    sendSuccess(res, safeData, "Found Job by job id", 200);
     return;
   } catch (error) {
     sendError(res, error, "Internal Server Error", 500);
